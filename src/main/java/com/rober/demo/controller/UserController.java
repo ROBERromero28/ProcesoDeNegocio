@@ -6,43 +6,37 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import com.rober.demo.util.Message;
 
 import java.util.*;
 
 @RestController
 public class UserController {
+
+
     @Autowired
     private UserRepository userRepository;
-
+    private Message message = new Message();
 
     @RequestMapping(value="api/users/{id}", method = RequestMethod.GET)
-    public ResponseEntity<User> GetUser(@PathVariable Long id){
+    public ResponseEntity<Optional> GetUser(@PathVariable Long id){
         Optional<User> foundUser=userRepository.findById(id);
 
         if(foundUser.isPresent()){
-            return ResponseEntity.ok(foundUser.get());
+            return message.viewMessage(HttpStatus.OK,"success","User found");
+
         }
-        Map<String,String> errorResponse = new HashMap<>();
-        errorResponse.put("error","NOT FOUND");
-        errorResponse.put("message","User NOT FOUND");
-        errorResponse.put("status", HttpStatus.NOT_FOUND.toString());
-        return new ResponseEntity(errorResponse,HttpStatus.NOT_FOUND );
+        return message.viewMessage(HttpStatus.NOT_FOUND,"Not found","User not found");
     }
 
     @RequestMapping(value = "api/users",method = RequestMethod.POST)
-    public ResponseEntity<User> createUser(@RequestBody User user){
+    public ResponseEntity<Optional> createUser(@RequestBody User user){
         Map<String, String> response = new LinkedHashMap<>();
         try{
             userRepository.save(user);
-            response.put("Success","user registered");
-            response.put("message","user registered success");
-            response.put("status",HttpStatus.OK.toString());
-            return new ResponseEntity(response,HttpStatus.OK);
+            return message.viewMessage(HttpStatus.OK,"success","registered user success!");
         }catch (Exception e){
-            response.put("error","Error");
-            response.put("message","No se registro a ninguno");
-            response.put("status",HttpStatus.INTERNAL_SERVER_ERROR.toString());
-            return new ResponseEntity(response,HttpStatus.INTERNAL_SERVER_ERROR);
+            return message.viewMessage(HttpStatus.INTERNAL_SERVER_ERROR,"error","An error occurred while registering the user!");
         }
 
 
@@ -53,7 +47,7 @@ public class UserController {
     }
 
     @RequestMapping(value="api/users/{id}",method = RequestMethod.PUT)
-    public ResponseEntity<User> editUser(@RequestBody User newUser , @PathVariable Long id){
+    public ResponseEntity<Optional> editUser(@RequestBody User newUser , @PathVariable Long id){
         Map<String, String> response = new HashMap<>();
         try{
             User user = userRepository.findById(id).get();
@@ -65,33 +59,24 @@ public class UserController {
             response.put("message","user edit success");
             response.put("status",HttpStatus.OK.toString());
             userRepository.save(user);
-            return new ResponseEntity(response,HttpStatus.OK);
+            return message.viewMessage(HttpStatus.OK,"success","user edit success!!");
 
         }catch (Exception e){
-            response.put("error","Not found");
-            response.put("message","User not found!");
-            response.put("status",HttpStatus.NOT_FOUND.toString());
-            return new ResponseEntity(response,HttpStatus.NOT_FOUND);
+            return message.viewMessage(HttpStatus.NOT_FOUND,"error","User not found!");
         }
 
 
     }
     @RequestMapping(value="api/users/{id}",method=RequestMethod.DELETE)
-    public ResponseEntity<User> deleteUser(@PathVariable Long id){
+    public ResponseEntity<Optional> deleteUser(@PathVariable Long id){
         Map<String, String> response = new HashMap<>();
         try{
             User user = userRepository.findById(id).get();
 
             userRepository.delete(user);
-            response.put("Success","user delete");
-            response.put("message","user delete success");
-            response.put("status",HttpStatus.OK.toString());
-            return new ResponseEntity(response,HttpStatus.OK);
+            return message.viewMessage(HttpStatus.OK,"success","user delete success!!");
         }catch (Exception e){
-            response.put("error","Not found");
-            response.put("message","User not found!");
-            response.put("status",HttpStatus.NOT_FOUND.toString());
-            return new ResponseEntity(response,HttpStatus.NOT_FOUND);
+            return message.viewMessage(HttpStatus.NOT_FOUND,"error","User not found!");
         }
 
 
