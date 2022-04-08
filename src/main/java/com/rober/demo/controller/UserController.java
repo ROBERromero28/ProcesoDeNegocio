@@ -5,6 +5,7 @@ import com.rober.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.rober.demo.util.Message;
 
@@ -17,7 +18,8 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
     private Message message = new Message();
-
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @RequestMapping(value="api/users/{id}", method = RequestMethod.GET)
     public ResponseEntity<Optional> GetUser(@PathVariable Long id){
         Optional<User> foundUser=userRepository.findById(id);
@@ -33,6 +35,7 @@ public class UserController {
     public ResponseEntity<Optional> createUser(@RequestBody User user){
         Map<String, String> response = new LinkedHashMap<>();
         try{
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepository.save(user);
             return message.viewMessage(HttpStatus.OK,"success","registered user success!");
         }catch (Exception e){
@@ -54,7 +57,7 @@ public class UserController {
             user.setFirstName(newUser.getFirstName());
             user.setLastName(newUser.getLastName());
             user.setEmail(newUser.getEmail());
-            user.setPassword(newUser.getPassword());
+            user.setPassword(passwordEncoder.encode(newUser.getPassword()));
             response.put("Success","user edit");
             response.put("message","user edit success");
             response.put("status",HttpStatus.OK.toString());

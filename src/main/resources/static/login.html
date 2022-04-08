@@ -2,9 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Login</title>
+
 </head>
 <body>
+<h1>Sign in</h1>
+<form action="" method="post" id="myForm">
 
+    <label  for="email">email</label>
+    <input type="email" name="email" id="email" required><br>
+    <label  for="password">password</label>
+    <input type="password" name="password" id="password" required><br>
+    <button type="button" onclick="sendData('api/auth/login')">Sign in</button>
+</form>
+<script src="js/local.js"></script>
 </body>
 </html>
