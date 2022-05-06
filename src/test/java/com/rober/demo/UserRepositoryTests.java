@@ -37,6 +37,5 @@ public class UserRepositoryTests {
 
                 assertEquals(user.getEmail(), exitstUser.getEmail());
 
-
         }
 }
