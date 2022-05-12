@@ -32,25 +32,11 @@ function listar(){
     fetch("api/users",settings)
     .then(response => response.json())
     .then(function(data){
-        
-        var usuarios = '';
-        for(const usuario of data){
-             console.log(usuario.email)
-             usuarios += ' <tr>'+
-             '<th scope="row">'+usuario.id+'</th>'+
-             '<td>'+usuario.firstName+'</td>'+
-             '<td>'+usuario.lastName+'</td>'+
-             '<td>'+usuario.email+'</td>'+
-             '<td>'+
-                 
-                 '<button type="button" class="btn btn-danger"><i class="fa-solid fa-user-minus"></i></button>'+
-                 '<a href="modificar.html" class="btn btn-warning"><i class="fa-solid fa-user-pen"></i></a>'+
-                 '<a href="visualizar.html" class="btn btn-info"><i class="fa-solid fa-clipboard-user"></i></a>'+
-             '</td>'+
-           '</tr> ';
+        if(data.lenght>0){
+            for(const usuario of data){
+                console.log(usuario.email)
+            }
         }
-        document.getElementById("listar").innerHTML = usuarios;
-        
     })
 }
 
