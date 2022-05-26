@@ -7,6 +7,7 @@ async function login(){
     for(var [k, v] of formData){//convertimos los datos a json
         jsonData[k] = v;
     }
+    console.log(jsonData);
     var settings={
         method: 'POST',
         headers:{
@@ -17,7 +18,7 @@ async function login(){
     }
     const request = await fetch("api/auth/login",settings);
     console.log(await request.text());
-    if(request.ok){
+    if(request.ok){        
         location.href= "dashboard.html";
     }
 }
@@ -37,6 +38,7 @@ function listar(){
         //if(data.lenght>0){
             var usuarios = '';
             for(const usuario of data){
+
                 console.log(usuario.email)
                 usuarios += '<tr>'+
                 '<th scope="row">'+usuario.id+'</th>'+
@@ -49,10 +51,32 @@ function listar(){
                   '<a href="#" onclick="verUsuario(\''+usuario.id+'\')"class="btn btn-outline-info"><i class="fa-solid fa-eye"></i></a>'+
                 '</td>'+
               '</tr>';
+              
             }
             document.getElementById("listar").innerHTML = usuarios;
         //}
     })
+}
+
+
+
+function verAgregar(){
+
+    var s="api/users";
+    var cadena='<form action="" method="post" id="myForm">'+
+    '<label  for="firstName" class="form-label">First Name</label>'+
+    '<input type="text" class="form-control" name="firstName" id="firstName" required> <br>'+
+    '<label  for="lastName" class="form-label">last Name</label>'+
+    '<input type="text" class="form-control" name="lastName" id="lastName" required><br>'+
+   ' <label  for="email" class="form-label" >email</label>'+
+   ' <input type="email" class="form-control" name="email" id="email" required><br>'+
+   ' <label  for="password" class="form-label">password</label>'+
+   ' <input type="password" class="form-control"  name="password" id="password" required><br>'+
+   ' <button type="button"  class="btn btn-outline-info" onclick="sendData(\''+s+'\')">Sign Up</button>'+
+    '</form>';
+            document.getElementById("contentModal").innerHTML = cadena;
+            var myModale = new bootstrap.Modal(document.getElementById('modalUsuario'))
+            myModale.toggle();
 }
 
 async function sendData(path){
@@ -72,6 +96,12 @@ async function sendData(path){
     });
     myForm.reset();
     console.log(await request.text())
+    listar();
+    alertas(" Se ha registrado el usuario exitosamente!",1)
+    document.getElementById("contentModal").innerHTML = '';
+    var myModalEl = document.getElementById('modalUsuario');
+    var modal = bootstrap.Modal.getInstance(myModalEl)
+    modal.hide();
 }
 
 
@@ -88,6 +118,9 @@ function eliminaUsuario(id){
     .then(function(data){
         listar();
         alertas(" Se ha eliminado el usuario exitosamente!",2)
+        var myModalEl = document.getElementById('modalUsuario');
+        var modal = bootstrap.Modal.getInstance(myModalEl)
+        
     })
 }
 
@@ -198,3 +231,4 @@ function alertas(mensaje,tipo){
   '</div>'
   document.getElementById("datos").innerHTML = alerta;
 }
+
