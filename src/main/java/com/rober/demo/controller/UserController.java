@@ -2,6 +2,7 @@ package com.rober.demo.controller;
 
 import com.rober.demo.entity.User;
 import com.rober.demo.repository.UserRepository;
+import com.rober.demo.util.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
@@ -20,8 +21,16 @@ public class UserController {
     private Message message = new Message();
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JWTUtil jwtUtil;
+    private boolean validarToken(String token){
+        String id = jwtUtil.getKey(token);
+        return id !=null;
+    }
+
     @RequestMapping(value="api/users/{id}", method = RequestMethod.GET)
-    public Optional<User> GetUser(@PathVariable Long id){
+    public Optional<User> GetUser(@PathVariable Long id, @RequestHeader(value = "Authorization") String token){
+        if(!validarToken(token)){return null;}
         Optional<User> foundUser=userRepository.findById(id);
 
         if(foundUser.isPresent()){
@@ -45,12 +54,14 @@ public class UserController {
 
     }
     @RequestMapping(value="api/users",method=RequestMethod.GET)
-    public List<User> listUsers(){
+    public List<User> listUsers(@RequestHeader(value = "Authorization") String token){
+        if(!validarToken(token)){return null;}
         return userRepository.findAll();
     }
 
     @RequestMapping(value="api/users/{id}",method = RequestMethod.PUT)
-    public ResponseEntity<Optional> editUser(@RequestBody User newUser , @PathVariable Long id){
+    public ResponseEntity<Optional> editUser(@RequestBody User newUser , @PathVariable Long id,@RequestHeader(value = "Authorization") String token){
+        if(!validarToken(token)){return null;}
         Map<String, String> response = new HashMap<>();
         try{
             User user = userRepository.findById(id).get();
@@ -71,7 +82,8 @@ public class UserController {
 
     }
     @RequestMapping(value="api/users/{id}",method=RequestMethod.DELETE)
-    public ResponseEntity<Optional> deleteUser(@PathVariable Long id){
+    public ResponseEntity<Optional> deleteUser(@PathVariable Long id,@RequestHeader(value = "Authorization") String token){
+        if(!validarToken(token)){return null;}
         Map<String, String> response = new HashMap<>();
         try{
             User user = userRepository.findById(id).get();
